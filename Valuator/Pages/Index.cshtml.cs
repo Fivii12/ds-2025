@@ -21,6 +21,10 @@ public class IndexModel : PageModel
 
     public IActionResult OnPost(string text)
     {
+        if (string.IsNullOrEmpty(text))
+        {
+            return Page();
+        }
         _logger.LogDebug(text);
 
         IDatabase db = _redis.GetDatabase();
