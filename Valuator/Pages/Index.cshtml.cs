@@ -53,7 +53,6 @@ public class IndexModel : PageModel
 
         foreach (char c in text)
         {
-            // Проверка, является ли символ неалфавитным
             if (!Char.IsLetter(c) || 
                 (c < 'A' || c > 'Z' && c < 'a' || c > 'z') && 
                 (c < 'А' || c > 'Я' && c < 'а' || c > 'я'))
@@ -62,7 +61,6 @@ public class IndexModel : PageModel
             }
         }
 
-        // Вычисляем долю неалфавитных символов
         double rank = (double)notAlphabeticCharCount / text.Length;
 
         return rank;
@@ -70,12 +68,11 @@ public class IndexModel : PageModel
 
     private double CalculateSimilarity(IDatabase db, string text, string id)
     {
-        var server = _redis.GetServer("localhost", 6379); // Подключение к серверу Redis
-
-        // Получаем все ключи, начинающиеся на "TEXT-"
+        var server = _redis.GetServer("localhost", 6379);
+        
         var keys = server.Keys(pattern: "TEXT-*").ToList();
         
-        string textKey = "TEXT-" + id; // Формируем правильный ключ
+        string textKey = "TEXT-" + id;
 
         foreach (var key in keys)
         {
