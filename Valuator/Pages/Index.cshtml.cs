@@ -21,10 +21,12 @@ public class IndexModel : PageModel
 
     public IActionResult OnPost(string text)
     {
+        Console.WriteLine(text);
         if (string.IsNullOrEmpty(text))
         {
             return Page();
         }
+        
         _logger.LogDebug(text);
 
         IDatabase db = _redis.GetDatabase();
@@ -32,16 +34,13 @@ public class IndexModel : PageModel
         string id = Guid.NewGuid().ToString();
 
         string textKey = "TEXT-" + id;
-        // TODO: (pa1) сохранить в БД (Redis) text по ключу textKey
         db.StringSet(textKey, text);
 
         string rankKey = "RANK-" + id;
-        // TODO: (pa1) посчитать rank и сохранить в БД (Redis) по ключу rankKey
         double rank = CalculateRank(text);
         db.StringSet(rankKey, rank);
 
         string similarityKey = "SIMILARITY-" + id;
-        // TODO: (pa1) посчитать similarity и сохранить в БД (Redis) по ключу similarityKey
         double similarity = CalculateSimilarity(db, text, id);
         db.StringSet(similarityKey, similarity);
 
@@ -53,10 +52,7 @@ public class IndexModel : PageModel
 
         foreach (char c in text)
         {
-            if (!Char.IsLetter(c) || 
-                (c < 'A' || c > 'Z' && c < 'a' || c > 'z') && 
-                (c < 'А' || c > 'Я' && c < 'а' || c > 'я'))
-            {
+            if (!char.IsLetter(c)){
                 notAlphabeticCharCount++;
             }
         }
@@ -76,7 +72,6 @@ public class IndexModel : PageModel
 
         foreach (var key in keys)
         {
-
             if (key == textKey){
                 continue;
             }
